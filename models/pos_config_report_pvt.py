@@ -88,8 +88,8 @@ class PosConfigReportPDV(models.TransientModel):
 				x['total_sales'] = x['price_unit'] * x['product_qty']
 				x['sale_average_day'] = self.last_thirty_sales(x['product_template_id'])[0]['total_sales']
 				x['sold_product_daily_qty']	= self.last_thirty_sales(x['product_template_id'])[0]['total_qty']
-				x['cost_product']: x['standard_price'] * x['product_qty']
-				x['utility_product']: (x['product_qty'] * x['price_unit']) - (x['product_qty'] * x['standard_price'])
+				x['cost_product']= x['standard_price'] * x['product_qty']
+				x['utility_product']= (x['product_qty'] * x['price_unit']) - (x['product_qty'] * x['standard_price'])
 
 	def return_record_product_report(self, pos_order_ids):
 		"""
