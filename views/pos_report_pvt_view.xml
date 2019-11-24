@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="pos_report_pvt_view_tree" model="ir.ui.view">
+		<field name="name">pos.report_pvt.tree</field>
+		<field name="model">pos.report_pvt</field>
+		<field name="arch" type="xml">
+
+			<tree>
+				<field name="pvt_store"/>
+				<field name="user_id"/>
+				<field name="date_order"/>
+				<field name="product_template_id"/>
+				<field name="product_category_id"/>
+				<field name="product_qty"/>
+				<field name="total_sales" sum="Total Sales"/>
+				<field name="sale_average_day" avg="AVG. Total Sales"/>
+				<field name="sold_product_daily_qty" avg="AVG Total Producto Qty"/>
+				<field name="utility_product"/>
+				<field name="cost_product"/>
+			</tree>
+
+		</field>
+	</record>
+
+
+		<record id="doctor_appointment_search_view" model="ir.ui.view">
+			<field name="name">Pos Report PVT Search</field>
+			<field name="model">pos.report_pvt</field>
+			<field name="arch" type="xml">
+
+				<search string="Search Pos Order">
+					<field name="pvt_store"/>
+					<field name="product_template_id"/>
+					<field name="product_category_id"/>
+
+					<group expand="0" name="group_by" string= "Group By">
+
+						<filter name="pvt_store" string="Tienda"  context="{'group_by' : 'pvt_store'}" />
+						<filter name="product_template_id" string="Producto" domain="[]" context="{'group_by' : 'product_template_id'}" />
+						<filter name="product_category_id" string="Categoría" domain="[]" context="{'group_by' :'product_category_id'}" />
+						<filter name="user_id" string="Vendedor" domain="[]" context="{'group_by' :'user_id'}" />
+
+					</group>
+
+				</search>
+			</field>
+		</record>
+
+
+<!--
+		<record id="doctor_appoinment_form_action" model="ir.actions.act_window">
+			<field name="name">Appoinment</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">doctor.appointment</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">kanban,tree,form</field>
+			<field name="search_view_id" ref="doctor_appointment_search_view"/>
+			<field name="context">{'search_default_today_appointment': 1}</field>
+			<field name="help" type="html">
+			  <p class="o_view_nocontent_smiling_face">
+				Create a new Appoinment
+			  </p>
+			</field>
+		</record>
+-->
+
+
+
+
+</odoo>

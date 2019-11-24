@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!--
+  
+		<menuitem
+			id="pos_report_pvt"
+			name="Reporte Pos"
+			parent="board.menu_board_my_dash"
+			action="pos_config_report_pvt_form_action"
+			sequence="2"/>
+-->
+
+    <menuitem id="menu_report_pos_main"
+        name="Reporte Pos"
+        parent="point_of_sale.menu_point_config_product"
+        sequence="11"
+        action="pos_config_report_pvt_form_action"
+        groups="l10n_co_point_of_sale_report.group_conf_user_report_pos"/>
+
+</odoo>

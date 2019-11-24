@@ -1,0 +1,76 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#    
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    Autor: Brayhan Andres Jaramillo Castaño
+#    Correo: brayhanjaramillo@hotmail.com
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+##############################################################################
+
+from odoo import api, fields, models, _
+import time
+from datetime import datetime, timedelta, date
+import logging
+_logger = logging.getLogger(__name__)
+from odoo import modules
+from odoo.addons import decimal_precision as dp
+
+
+class PosReportPVT(models.TransientModel):
+	
+	_name = 'pos.report_pvt'
+	_description= "Pos Report PVT"
+
+
+	
+	#'date_order':, 
+	#'product_category_id':, 
+	#'pvt_store':, 
+	#'product_template_id':, 
+	#'total_sales':, 
+	#'sale_average_day':, 
+	#'product_qty':, 
+	#'sold_product_daily_qty':, 
+	#'cost_product':, 
+	#'utility_product':, 
+
+
+	#Fecha de la orden
+	date_order = fields.Datetime(string="Fecha Inicio")
+	#vendedor
+	user_id = fields.Many2one('res.users', string="Vendedor")
+	#categoria del producto
+	product_category_id = fields.Many2one('product.category', string=u"Categoría")
+	#punto de venta
+	pvt_store = fields.Many2one('pos.config', string="Tienda")
+	#product
+	product_template_id = fields.Many2one('product.template', string="Producto")
+	#ventas
+	total_sales = fields.Float(string="Total Ventas", default=0)
+	#venta promedio dia
+	sale_average_day = fields.Float(string=u"Venta Promedio Día", default=0)
+	#productos vendidos
+	product_qty = fields.Float(string="Productos Vendidos", default=0)
+	#promedio de productos vendidos diarios
+	sold_product_daily_qty = fields.Float(string="Productos Vendidos Diarios", default=0)
+	#costo del producto
+	cost_product = fields.Float(string="Costo Total", default=0)
+	#Utilidad del producto
+	utility_product = fields.Float(string="Utilidad Total", default=0)
+
+PosReportPVT()
