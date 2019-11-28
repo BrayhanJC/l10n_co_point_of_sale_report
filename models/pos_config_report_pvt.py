@@ -178,20 +178,17 @@ class PosConfigReportPDV(models.TransientModel):
 
 		data_order = self.return_data_order_report(data)
 
-		print('*******************')
-		print(data_order)
-		print('*******************')
-
 		self.update_vals_sales(data_order)
 
-		print('------Data Agrupada')
-		print(data_order)
+		values = []
+		sql = """
+				INSERT INTO pos_report_pvt(date_order, user_id, product_category_id, pvt_store, product_template_id, total_sales, sale_average_day, product_qty, sold_product_daily_qty, cost_product, utility_product) values
+			"""
 		if data_order:
 			for x in data_order:
 
-				print(self.env['res.users'].search([('id', '=', x['user_id'])]).name)
+				"""
 				vals={
-
 
 					'user_id': x['user_id'], 
 					'date_order': x['date_order'], 
@@ -206,8 +203,17 @@ class PosConfigReportPDV(models.TransientModel):
 					'utility_product': (x['product_qty'] * x['price_unit']) - (x['product_qty'] * x['standard_price'])
 					#'utility_product': x['utility_product']			
 				}
+				"""
+	
+
+				values.append("('%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)" % (x['date_order'], x['user_id'], x['product_category_id'], x['pvt_store'], x['product_template_id'], x['total_sales'], x['sale_average_day'], x['product_qty'], x['sold_product_daily_qty'], (x['standard_price'] * x['product_qty']), (x['product_qty'] * x['price_unit']) - (x['product_qty'] * x['standard_price'])))
+
+
+			if values:
+				sql += ','.join( values )
+				self.env.cr.execute( sql )
 				
-				model_pos_report_pvt.create(vals)
+				#model_pos_report_pvt.create(vals)
 
 	"""
 		Funcion permite retornar los datos mas importantes de la compania
@@ -273,11 +279,10 @@ class PosConfigReportPDV(models.TransientModel):
 			domain.append(('user_id', 'in', [x.id for x in self.user_ids]))
 			
 
-		print(domain)
 		pos_order_ids = model_pos_order.search(domain)
 
-		print('-------Las ordenes son: -----')
-		print(pos_order_ids)
+
+	
 
 		#eliminando datos del modelo
 		self.delete_record_pos_report_pvt(model_pos_report_pvt)
@@ -309,9 +314,9 @@ class PosConfigReportPDV(models.TransientModel):
 					for value in x['data']:
 						#print('la cateogria es: ' + str(x['product_category_id']) + ' el puntode venta es: ' + str(value['pvt_store']))
 						if value['pvt_store'] == pvt_id:
-							print('entro')
+							#print('entro')
 
-							print('se edita el punto de venta ' + str(pvt_id) + ' con categoria ' + str(x['product_category_id']))
+							#print('se edita el punto de venta ' + str(pvt_id) + ' con categoria ' + str(x['product_category_id']))
 							value['data'].append(data)
 					#	else:
 							#value['pvt_store'].append(pvt_id)
@@ -341,8 +346,6 @@ class PosConfigReportPDV(models.TransientModel):
 				self.update_data_excel(x['product_category_id'],  x['pvt_store'], x, data_new)
 
 			else:
-
-
 
 				data_new.append({'product_category_id': x['product_category_id'], 'data': [{'pvt_store': x['pvt_store'], 'data': [x] }]})
 
@@ -374,11 +377,6 @@ class PosConfigReportPDV(models.TransientModel):
 
 			iterator+=1
 
-
-
-		print('Total iteraciones')
-		print(iterator)
-
 		vals = {
 		'total_sales': total_sales,
 		'sale_average_day': sale_average_day_avg/iterator,
@@ -389,13 +387,7 @@ class PosConfigReportPDV(models.TransientModel):
 
 		}
 
-		print(vals)
 		return vals
-
-
-
-
-
 
 
 	def sortSecond(self, val): 
@@ -413,10 +405,6 @@ class PosConfigReportPDV(models.TransientModel):
 
 		record = self.env['pos.report_pvt'].search([])
 
-
-		for x in record:
-			print(x.product_template_id.name)
-
 		categ_ids = []
 		data_pvt = []
 		for x in record:
@@ -425,33 +413,10 @@ class PosConfigReportPDV(models.TransientModel):
 			if x.pvt_store.id not in data_pvt:
 				data_pvt.append(x.pvt_store.id)
 
-
-		print('los datos son')
-		print(categ_ids)
-		print(data_pvt)
-
-
-
-
 		#sorted(vals, key=lambda x: getattr(x, x['product_category_id']), reverse=True)
 		#new_data = sorted(vals, key=lambda x: x['product_category_id'])
 
 		#vals = sorted(new_data, key=lambda x: x['pvt_store'])
-
-		"""
-
-[{'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-20 00:40:26', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 4, 'product_template_name': 'Samung s9 plus', 'product_qty': 4.0, 'price_unit': 10000.0, 'total_sales': 40000.0, 'sale_average_day': 4666.666666666667, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 5000.0},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-20 00:39:59', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 3, 'product_template_name': 'Iphone x', 'product_qty': 5.0, 'price_unit': 100000.0, 'total_sales': 500000.0, 'sale_average_day': 50000.0, 'sold_product_daily_qty': 0.5, 'cost_product': 0, 'utility_product': 0, 'standard_price': 80000.0},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-10-30 23:04:42', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 1, 'product_template_name': 'Propinas', 'product_qty': 6.0, 'price_unit': 1.0, 'total_sales': 6.0, 'sale_average_day': 0.36666666666666664, 'sold_product_daily_qty': 0.36666666666666664, 'cost_product': 0, 'utility_product': 0, 'standard_price': 0.5},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-20 00:40:13', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 5, 'product_template_name': 'Devos', 'product_qty': 8.0, 'price_unit': 50000.0, 'total_sales': 400000.0, 'sale_average_day': 30000.0, 'sold_product_daily_qty': 0.6, 'cost_product': 0, 'utility_product': 0, 'standard_price': 10000.0},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-10-30 23:07:09', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 2, 'product_template_name': 'Varios', 'product_qty': 10.0, 'price_unit': 18.0, 'total_sales': 180.0, 'sale_average_day': 8.4, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 13.0},
- {'user_id': 6, 'user_name': 'Vendedor', 'date_order': '2019-10-18 21:51:11', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 2, 'product_template_name': 'Varios', 'product_qty': 2.0, 'price_unit': 18.0, 'total_sales': 36.0, 'sale_average_day': 8.4, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 13.0},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 3, 'product_template_name': 'Iphone x', 'product_qty': 10.0, 'price_unit': 100000.0, 'total_sales': 1000000.0, 'sale_average_day': 50000.0, 'sold_product_daily_qty': 0.5, 'cost_product': 0, 'utility_product': 0, 'standard_price': 80000.0},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 1, 'product_template_name': 'Propinas', 'product_qty': 5.0, 'price_unit': 1.0, 'total_sales': 5.0, 'sale_average_day': 0.36666666666666664, 'sold_product_daily_qty': 0.36666666666666664, 'cost_product': 0, 'utility_product': 0, 'standard_price': 0.5},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 4, 'product_template_name': 'Samung s9 plus', 'product_qty': 10.0, 'price_unit': 10000.0, 'total_sales': 100000.0, 'sale_average_day': 4666.666666666667, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 5000.0}, 
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 2, 'product_template_name': 'Varios', 'product_qty': 5.0, 'price_unit': 18.0, 'total_sales': 90.0, 'sale_average_day': 8.4, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 13.0}, 
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 5, 'product_template_name': 'Devos', 'product_qty': 10.0, 'price_unit': 50000.0, 'total_sales': 500000.0, 'sale_average_day': 30000.0, 'sold_product_daily_qty': 0.6, 'cost_product': 0, 'utility_product': 0, 'standard_price': 10000.0}]
-		"""
 
 
 		name_report = "Pos Report"
@@ -559,27 +524,7 @@ class PosConfigReportPDV(models.TransientModel):
 				row=14
 				col=0
 
-
-				"""
-[{'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-20 00:40:26', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 4, 'product_template_name': 'Samung s9 plus', 'product_qty': 4.0, 'price_unit': 10000.0, 'total_sales': 40000.0, 'sale_average_day': 4666.666666666667, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 5000.0},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-20 00:39:59', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 3, 'product_template_name': 'Iphone x', 'product_qty': 5.0, 'price_unit': 100000.0, 'total_sales': 500000.0, 'sale_average_day': 50000.0, 'sold_product_daily_qty': 0.5, 'cost_product': 0, 'utility_product': 0, 'standard_price': 80000.0},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-10-30 23:04:42', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 1, 'product_template_name': 'Propinas', 'product_qty': 6.0, 'price_unit': 1.0, 'total_sales': 6.0, 'sale_average_day': 0.36666666666666664, 'sold_product_daily_qty': 0.36666666666666664, 'cost_product': 0, 'utility_product': 0, 'standard_price': 0.5},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-20 00:40:13', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 5, 'product_template_name': 'Devos', 'product_qty': 8.0, 'price_unit': 50000.0, 'total_sales': 400000.0, 'sale_average_day': 30000.0, 'sold_product_daily_qty': 0.6, 'cost_product': 0, 'utility_product': 0, 'standard_price': 10000.0},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-10-30 23:07:09', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 2, 'product_template_name': 'Varios', 'product_qty': 10.0, 'price_unit': 18.0, 'total_sales': 180.0, 'sale_average_day': 8.4, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 13.0},
- {'user_id': 6, 'user_name': 'Vendedor', 'date_order': '2019-10-18 21:51:11', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 2, 'product_template_name': 'Varios', 'product_qty': 2.0, 'price_unit': 18.0, 'total_sales': 36.0, 'sale_average_day': 8.4, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 13.0},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 3, 'product_template_name': 'Iphone x', 'product_qty': 10.0, 'price_unit': 100000.0, 'total_sales': 1000000.0, 'sale_average_day': 50000.0, 'sold_product_daily_qty': 0.5, 'cost_product': 0, 'utility_product': 0, 'standard_price': 80000.0},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 1, 'product_template_name': 'Propinas', 'product_qty': 5.0, 'price_unit': 1.0, 'total_sales': 5.0, 'sale_average_day': 0.36666666666666664, 'sold_product_daily_qty': 0.36666666666666664, 'cost_product': 0, 'utility_product': 0, 'standard_price': 0.5},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 4, 'product_template_name': 'Samung s9 plus', 'product_qty': 10.0, 'price_unit': 10000.0, 'total_sales': 100000.0, 'sale_average_day': 4666.666666666667, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 5000.0}, 
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 2, 'product_template_name': 'Varios', 'product_qty': 5.0, 'price_unit': 18.0, 'total_sales': 90.0, 'sale_average_day': 8.4, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 13.0}, 
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 5, 'product_template_name': 'Devos', 'product_qty': 10.0, 'price_unit': 50000.0, 'total_sales': 500000.0, 'sale_average_day': 30000.0, 'sold_product_daily_qty': 0.6, 'cost_product': 0, 'utility_product': 0, 'standard_price': 10000.0}]
-		
-
-[{'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-20 00:40:26', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 4, 'product_template_name': 'Samung s9 plus', 'product_qty': 4.0, 'price_unit': 10000.0, 'total_sales': 40000.0, 'sale_average_day': 4666.666666666667, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 5000.0}, 
-{'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-20 00:39:59', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 3, 'product_template_name': 'Iphone x', 'product_qty': 5.0, 'price_unit': 100000.0, 'total_sales': 500000.0, 'sale_average_day': 50000.0, 'sold_product_daily_qty': 0.5, 'cost_product': 0, 'utility_product': 0, 'standard_price': 80000.0},
- {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-10-30 23:04:42', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 1, 'product_template_name': 'Propinas', 'product_qty': 6.0, 'price_unit': 1.0, 'total_sales': 6.0, 'sale_average_day': 0.36666666666666664, 'sold_product_daily_qty': 0.36666666666666664, 'cost_product': 0, 'utility_product': 0, 'standard_price': 0.5}, {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-20 00:40:13', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 5, 'product_template_name': 'Devos', 'product_qty': 8.0, 'price_unit': 50000.0, 'total_sales': 400000.0, 'sale_average_day': 30000.0, 'sold_product_daily_qty': 0.6, 'cost_product': 0, 'utility_product': 0, 'standard_price': 10000.0}, {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-10-30 23:07:09', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 2, 'product_template_name': 'Varios', 'product_qty': 10.0, 'price_unit': 18.0, 'total_sales': 180.0, 'sale_average_day': 8.4, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 13.0}, {'user_id': 6, 'user_name': 'Vendedor', 'date_order': '2019-10-18 21:51:11', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 1, 'pvt_store_name': 'Main', 'product_template_id': 2, 'product_template_name': 'Varios', 'product_qty': 2.0, 'price_unit': 18.0, 'total_sales': 36.0, 'sale_average_day': 8.4, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 13.0}, {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 3, 'product_template_name': 'Iphone x', 'product_qty': 10.0, 'price_unit': 100000.0, 'total_sales': 1000000.0, 'sale_average_day': 50000.0, 'sold_product_daily_qty': 0.5, 'cost_product': 0, 'utility_product': 0, 'standard_price': 80000.0}, {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 1, 'product_template_name': 'Propinas', 'product_qty': 5.0, 'price_unit': 1.0, 'total_sales': 5.0, 'sale_average_day': 0.36666666666666664, 'sold_product_daily_qty': 0.36666666666666664, 'cost_product': 0, 'utility_product': 0, 'standard_price': 0.5}, {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 3, 'product_category_name': 'Celulares', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 4, 'product_template_name': 'Samung s9 plus', 'product_qty': 10.0, 'price_unit': 10000.0, 'total_sales': 100000.0, 'sale_average_day': 4666.666666666667, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 5000.0}, {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 2, 'product_template_name': 'Varios', 'product_qty': 5.0, 'price_unit': 18.0, 'total_sales': 90.0, 'sale_average_day': 8.4, 'sold_product_daily_qty': 0.4666666666666667, 'cost_product': 0, 'utility_product': 0, 'standard_price': 13.0}, {'user_id': 1, 'user_name': 'ADMINISTRATOR  ADMINISTRATOR ', 'date_order': '2019-11-22 20:18:43', 'product_category_id': 6, 'product_category_name': 'Esencias', 'pvt_store': 2, 'pvt_store_name': 'Claro', 'product_template_id': 5, 'product_template_name': 'Devos', 'product_qty': 10.0, 'price_unit': 50000.0, 'total_sales': 500000.0, 'sale_average_day': 30000.0, 'sold_product_daily_qty': 0.6, 'cost_product': 0, 'utility_product': 0, 'standard_price': 10000.0}]
-				"""	
-
-
+				model_category = self.env['product.category']
 
 				for categ in categ_ids:
 
@@ -598,9 +543,9 @@ class PosConfigReportPDV(models.TransientModel):
 
 									if flag_categ:
 										merge= 'A'+str(row)+':B'+str(row)
-										print(merge)
+										
 										aveg_record = self.search_category_pvt(model_pos_report_pvt, categ, pvt)
-										worksheet.merge_range(merge, self.env['product.category'].search([('id', '=', categ)]).name , letter_category)
+										worksheet.merge_range(merge, model_category.search([('id', '=', categ)]).name , letter_category)
 										worksheet.write('C'+str(row)+':D'+str(row), '', letter_number_total)
 										worksheet.write('D'+str(row)+':E'+str(row), (aveg_record['total_sales']), letter_number_total)
 										worksheet.write('E'+str(row)+':F'+str(row),  (aveg_record['sale_average_day']), letter_number_total)
@@ -615,15 +560,15 @@ class PosConfigReportPDV(models.TransientModel):
 
 
 									if flag_pvt:
-										print('entro varias veces')
+										
 										for validate_pvt in flag_pvt:
 											if value.pvt_store.id not in flag_pvt:
 												worksheet.write(row,col, 'PVT. ' +  str(value.pvt_store.name), letter_pvt)
 												flag_pvt.append(value.pvt_store.id)
-												print('actualizo')
+												
 									else:
 										worksheet.write(row,col, 'PVT. ' + str(value.pvt_store.name), letter_pvt)
-										print('entro una vez')
+										
 										flag_pvt.append(value.pvt_store.id)
 
 									worksheet.write(row,col+1 , str(value.product_template_id.name), letter_left)
@@ -663,10 +608,6 @@ class PosConfigReportPDV(models.TransientModel):
 
 		print('data')
 		data = self.return_data()
-		print('=====================')
-		print(data)
-		print('=====================')
-		#full
 
 		model_pos_report_pvt = self.env['pos.report_pvt']
 		self.create_records_pos_report_pvt(data, model_pos_report_pvt)
