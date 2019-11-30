@@ -1,91 +1,76 @@
-SELECT pvt.name AS pvt, pvt.id as pvt_store, r_user.login AS user_name, r_user.id AS user_id,
-product_tmpl.id as product_template_id, product_tmpl.name AS product_name, product_tmpl.categ_id as product_category_id,
-SUM(order_line.qty) AS product_qty, product_tmpl.list_price, SUM(order_line.qty * order_line.price_unit) AS total_sales
+INSERT INTO pos_report_pvt (user_id, product_category_id, pvt_store, product_template_id, total_sales, sale_average_day, product_qty, sold_product_daily_qty)
+SELECT r_user.id, product_tmpl.categ_id, pvt.id, product_tmpl.id, SUM(order_line.qty * order_line.price_unit), 
+((SELECT SUM(ts_order_line.qty * ts_order_line.price_unit)
+FROM pos_order ts_pos_or, pos_order_line ts_order_line, pos_session ts_pos_se, 
+product_product ts_product, product_template ts_product_tmpl, res_users ts_r_user, 
+res_partner ts_partner, pos_config ts_pvt, product_category ts_product_categ
+
+WHERE ts_pos_or.date_order <= '%(date_today)s'
+AND ts_pos_or.date_order >= '%(date_last_thirty)s'
+
+AND ts_order_line.order_id = ts_pos_or.id
+
+AND ts_pos_or.session_id = ts_pos_se.id
+
+AND ts_order_line.product_id = ts_product.id
+AND ts_product.product_tmpl_id = ts_product_tmpl.id
+AND ts_product_tmpl.id = product_tmpl.id
+AND ts_product.product_tmpl_id = product_tmpl.id
+
+AND ts_r_user.id = ts_pos_or.user_id
+AND ts_r_user.partner_id = ts_partner.id
+AND ts_r_user.id = r_user.id
+
+AND ts_pvt.id = ts_pos_se.config_id
+AND ts_pvt.id = pvt.id
+
+AND ts_product_categ.id = ts_product_tmpl.categ_id
+AND ts_product_tmpl.categ_id = product_tmpl.categ_id)/30)::float,
+SUM(order_line.qty), 
+((SELECT SUM(sp_order_line.qty)
+FROM pos_order sp_pos_or, pos_order_line sp_order_line, pos_session sp_pos_se, 
+product_product sp_product, product_template sp_product_tmpl, res_users sp_r_user, 
+res_partner sp_partner, pos_config sp_pvt, product_category sp_product_categ
+WHERE sp_pos_or.date_order <= '%(date_today)s'
+AND sp_pos_or.date_order >= '%(date_last_thirty)s'
+
+AND sp_order_line.order_id = sp_pos_or.id
+
+AND sp_pos_or.session_id = sp_pos_se.id
+
+AND sp_order_line.product_id = sp_product.id
+AND sp_product.product_tmpl_id = sp_product_tmpl.id
+AND sp_product_tmpl.id = product_tmpl.id
+AND sp_product.product_tmpl_id = product_tmpl.id
+
+AND sp_r_user.id = sp_pos_or.user_id
+AND sp_r_user.partner_id = sp_partner.id
+AND sp_r_user.id = r_user.id
+
+AND sp_pvt.id = sp_pos_se.config_id
+AND sp_pvt.id = pvt.id
+
+AND sp_product_categ.id = sp_product_tmpl.categ_id
+AND sp_product_tmpl.categ_id = product_tmpl.categ_id)/30)::float
+
+
 FROM pos_order pos_or, pos_order_line order_line, pos_session pos_se, 
 product_product product, product_template product_tmpl, res_users r_user, 
 res_partner partner, pos_config pvt, product_category product_categ
-WHERE pos_or.date_order <= '2019-12-31 20:18:11.887'
+WHERE pos_or.date_order <= '%(date_today)s'
 
-
---Relacionando ordenes
 AND order_line.order_id = pos_or.id
 
---Relacionando sesiones
 AND pos_or.session_id = pos_se.id
 
---Relacionando produtos
 AND order_line.product_id = product.id
 AND product.product_tmpl_id = product_tmpl.id
 
---Relacion usuario
 AND r_user.id = pos_or.user_id
 AND r_user.partner_id = partner.id
 
---Relacion punto de venta
 AND pvt.id = pos_se.config_id
 
---Relacion categoria
 AND product_categ.id = product_tmpl.categ_id
 
-GROUP BY r_user.id, product_tmpl.id, pvt.id, pvt.name, product_tmpl.categ_id
-
-
-
-
---Subconsulta venta totales
-
-(SELECT SUM(order_line.qty * order_line.price_unit) AS venta_promedio_dia
-FROM pos_order pos_or, pos_order_line order_line, pos_session pos_se, 
-product_product product, product_template product_tmpl, res_users r_user, 
-res_partner partner, pos_config pvt, product_category product_categ
-WHERE pos_or.date_order <= '2019-12-31 20:18:11.887'
-pos_or.date_order >= '2019-10-01 20:18:11.887'
-
---Relacionando ordenes
-AND order_line.order_id = pos_or.id
-
---Relacionando sesiones
-AND pos_or.session_id = pos_se.id
-
---Relacionando produtos
-AND order_line.product_id = product.id
-AND product.product_tmpl_id = product_tmpl.id
-
---Relacion usuario
-AND r_user.id = pos_or.user_id
-AND r_user.partner_id = partner.id
-
---Relacion punto de venta
-AND pvt.id = pos_se.config_id
-
---Relacion categoria
-AND product_categ.id = product_tmpl.categ_id)
-
-GROUP BY r_user.id, product_tmpl.id, pvt.id, pvt.name, product_tmpl.categ_id
-
-
-
-		domain = []
-		#model_pos_config = self.env['pos.config']
-		model_pos_order = self.env['pos.order']
-		model_pos_sesion = self.env['pos.session']
-		model_pos_report_pvt = self.env['pos.report_pvt']
-
-		#llenando domain para realizar la busqueda
-		if self.date_begin:
-			domain.append(('date_order', '>=', self.date_begin))
-		if self.date_end:
-			domain.append(('date_order', '<=', self.date_end))
-		else:
-			domain.append(('date_order', '<=', fields.datetime.now()))
-		if self.pvt_store:
-			#verificando que sesiones tienen el punto de venta seleccionado
-			pos_session_ids = model_pos_sesion.search([('config_id', '=', self.pvt_store.id)])
-			domain.append(('session_id', 'in', [x.id for x in pos_session_ids]))
-		if self.user_ids:
-			domain.append(('user_id', 'in', [x.id for x in self.user_ids]))
-			
-
-		pos_order_ids = model_pos_order.search(domain)
-
-
+GROUP BY r_user.id, product_tmpl.id, pvt.id, pvt.name, product_tmpl.categ_id;

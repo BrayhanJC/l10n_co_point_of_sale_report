@@ -67,10 +67,21 @@ class PosReportPVT(models.TransientModel):
 	#productos vendidos
 	product_qty = fields.Float(string="Productos Vendidos", default=0)
 	#promedio de productos vendidos diarios
-	sold_product_daily_qty = fields.Float(string="Productos Vendidos Diarios", default=0)
+	sold_product_daily_qty = fields.Float(string="Productos Vendidos Diarios", default=0, store=True)
 	#costo del producto
-	cost_product = fields.Float(string="Costo Total", default=0)
+	cost_product = fields.Float(string="Costo Total", compute="_compute_cost_product", default=0)
 	#Utilidad del producto
-	utility_product = fields.Float(string="Utilidad Total", default=0)
+	utility_product = fields.Float(string="Utilidad Total", compute="_compute_utility_product", default=0)
+	#cantidad a la mano
+	product_qty_actual = fields.Float(string='Cantidad a la mano', digits=dp.get_precision('Product Unit of Measure'), related='product_template_id.qty_available', store=True)
+	
 
+	def _compute_cost_product(self):
+		for x in self:
+			x.cost_product = x.product_template_id.standard_price * x.product_qty
+
+	def _compute_utility_product(self):
+		for x in self:
+			x.utility_product = (x.product_qty * x.product_template_id.list_price) - (x.product_qty * x.product_template_id.standard_price)
+					
 PosReportPVT()

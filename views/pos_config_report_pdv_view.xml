@@ -14,7 +14,7 @@
 				</group>
 
 				<group col="4">
-					<field name="pvt_store"/>
+					<field name="pvt_ids" widget="many2many_tags"/>
 					<field name="user_ids" widget="many2many_tags"/>
 				</group>
 
