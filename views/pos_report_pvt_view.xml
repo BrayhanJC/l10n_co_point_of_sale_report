@@ -18,10 +18,13 @@
 				<field name="sold_product_daily_qty" avg="AVG Total Producto Qty"/>
 				<field name="utility_product" sum="Utility Product Total"/>
 				<field name="cost_product" sum="Total Cost Product"/>
-				<field name="product_qty_stock"/>
-				<field name="product_virtual_available"/>
-				<field name="product_incoming_qty"/>
-				<field name="product_outgoing_qty"/>
+				<field name="product_qty_stock" sum="Total Stock Product"/>
+				<field name="product_virtual_available" sum="Total Virtual Available"/>
+				<field name="product_incoming_qty" sum="Total Inconming"/>
+				<field name="product_outgoing_qty" sum="Total Outgoing"/>
+				<field name="product_nbr_reordering_rules"/>
+				<field name="product_reordering_min_qty" sum="Total Reording Min"/>
+				<field name="product_reordering_max_qty" sum="Total Reording Max"/>
 			</tree>
 
 		</field>

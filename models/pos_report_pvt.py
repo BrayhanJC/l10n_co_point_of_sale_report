@@ -73,38 +73,21 @@ class PosReportPVT(models.TransientModel):
 	#Utilidad del producto
 	utility_product = fields.Float(string="Utilidad Total", compute="_compute_utility_product", default=0)
 	#cantidad a la mano
-	product_qty_stock = fields.Float(string='A la mano', compute="_compute_qty_stock", digits=dp.get_precision('Product Unit of Measure'))
+	product_qty_stock = fields.Float(string = 'A la mano', digits=dp.get_precision('Product Unit of Measure'), related='product_template_id.qty_available', store=True)
 	#cantidad virtual
-	product_virtual_available = fields.Float(string='Cantidad Virtual', compute="_compute_qty_virtual", digits=dp.get_precision('Product Unit of Measure'))
+	product_virtual_available = fields.Float(string = 'Cantidad Virtual', digits=dp.get_precision('Product Unit of Measure'), related='product_template_id.virtual_available', store=True)
 	#cantidad de entrada
-	product_incoming_qty = fields.Float(string='Cantidad Entrante', compute="_compute_incoming_qty", digits=dp.get_precision('Product Unit of Measure'))
-	#cantidad de entrada
-	product_outgoing_qty = fields.Float(string='Cantidad Saliente', compute="_compute_outgoing_qty", digits=dp.get_precision('Product Unit of Measure'))
+	product_incoming_qty = fields.Float(string='Cantidad Entrante', digits=dp.get_precision('Product Unit of Measure'), related='product_template_id.incoming_qty', store=True)
+	#cantidad de salida
+	product_outgoing_qty = fields.Float(string='Cantidad Saliente', digits=dp.get_precision('Product Unit of Measure'), related='product_template_id.outgoing_qty', store=True)
 	
-
-	def _compute_outgoing_qty(self):
-		for x in self:
-			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])
-			x.product_outgoing_qty = product_id.outgoing_qty
-
-
-	def _compute_incoming_qty(self):
-		for x in self:
-			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])
-			x.product_incoming_qty = product_id.incoming_qty
-
-
-
-	def _compute_qty_virtual(self):
-		for x in self:
-			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])
-			x.product_virtual_available = product_id.virtual_available
-
-
-	def _compute_qty_stock(self):
-		for x in self:
-			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])
-			x.product_qty_stock = product_id.qty_available
+	#Reglas de Reordenamiento
+	product_nbr_reordering_rules = fields.Integer(string= 'Reglas de Abastecimiento', digits=dp.get_precision('Product Unit of Measure'), related='product_template_id.nbr_reordering_rules', store=True)
+	#Regla minima
+	product_reordering_min_qty = fields.Float(string= u'Reabastecimiento Mínimo', digits=dp.get_precision('Product Unit of Measure'), related='product_template_id.reordering_min_qty', store=True)
+	#Regla maxima
+	product_reordering_max_qty = fields.Float(string= u'Reabastecimiento Máximo', digits=dp.get_precision('Product Unit of Measure'), related='product_template_id.reordering_max_qty', store=True)
+	
 
 	def _compute_cost_product(self):
 		for x in self:

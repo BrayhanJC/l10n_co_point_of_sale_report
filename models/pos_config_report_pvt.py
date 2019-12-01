@@ -231,7 +231,8 @@ AND product_categ.id = product_tmpl.categ_id
 		worksheet.set_column('L1:L1',35)
 		worksheet.set_column('M1:J1',35)
 		worksheet.set_column('N1:K1',35)
-	
+		worksheet.set_column('O1:J1',35)
+		worksheet.set_column('P1:K1',35)	
 
 		preview = name_report 
 
@@ -252,6 +253,10 @@ AND product_categ.id = product_tmpl.categ_id
 				worksheet.write('K1', 'Cantidad Virtual', header_format)
 				worksheet.write('L1', 'Cantidad Entrante', header_format)
 				worksheet.write('M1', 'Cantidad Saliente', header_format)
+				worksheet.write('L1', 'Reglas de Abastecimiento', header_format)
+				worksheet.write('M1', 'Abastecimiento Minimo', header_format)
+				worksheet.write('N1', 'Abastecimiento Maximo', header_format)
+
 
 				row=1
 				col=0
@@ -271,6 +276,9 @@ AND product_categ.id = product_tmpl.categ_id
 					worksheet.write(row,col+10 ,  value.product_virtual_available, letter_number)
 					worksheet.write(row,col+11,  value.product_incoming_qty, letter_number)
 					worksheet.write(row,col+12,  value.product_outgoing_qty, letter_number)
+					worksheet.write(row,col+13 ,  value.product_nbr_reordering_rules, letter_number)
+					worksheet.write(row,col+14,  value.product_reordering_min_qty, letter_number)
+					worksheet.write(row,col+15,  value.product_reordering_max_qty, letter_number)
 					row+=1
 
 
