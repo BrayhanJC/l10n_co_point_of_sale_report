@@ -253,9 +253,9 @@ AND product_categ.id = product_tmpl.categ_id
 				worksheet.write('K1', 'Cantidad Virtual', header_format)
 				worksheet.write('L1', 'Cantidad Entrante', header_format)
 				worksheet.write('M1', 'Cantidad Saliente', header_format)
-				worksheet.write('L1', 'Reglas de Abastecimiento', header_format)
-				worksheet.write('M1', 'Abastecimiento Minimo', header_format)
-				worksheet.write('N1', 'Abastecimiento Maximo', header_format)
+				worksheet.write('N1', 'Reglas de Abastecimiento', header_format)
+				worksheet.write('O1', 'Abastecimiento Minimo', header_format)
+				worksheet.write('P1', 'Abastecimiento Maximo', header_format)
 
 
 				row=1
