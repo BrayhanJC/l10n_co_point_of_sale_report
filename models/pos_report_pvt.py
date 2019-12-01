@@ -73,19 +73,19 @@ class PosReportPVT(models.TransientModel):
 	#Utilidad del producto
 	utility_product = fields.Float(string="Utilidad Total", compute="_compute_utility_product", default=0)
 	#cantidad virtual
-	product_qty_stock = fields.Float(string='A la Mano', related='product_id.qty_available', digits=dp.get_precision('Product Unit of Measure'))
+	product_qty_stock = fields.Float(string='A la Mano', related='product_template_id.qty_available', digits=dp.get_precision('Product Unit of Measure'))
 	#cantidad virtual
-	product_virtual_available = fields.Float(string='Cantidad Virtual', related='product_id.qty_virtual', digits=dp.get_precision('Product Unit of Measure'))
+	product_virtual_available = fields.Float(string='Cantidad Virtual', related='product_template_id.qty_virtual', digits=dp.get_precision('Product Unit of Measure'))
 	#cantidad de entrada
-	product_incoming_qty = fields.Float(string='Cantidad Entrante', related='product_id.incoming_qty', digits=dp.get_precision('Product Unit of Measure'))
+	product_incoming_qty = fields.Float(string='Cantidad Entrante', related='product_template_id.incoming_qty', digits=dp.get_precision('Product Unit of Measure'))
 	#cantidad de entrada
-	product_outgoing_qty = fields.Float(string='Cantidad Saliente', related='product_id.outgoing_qty', digits=dp.get_precision('Product Unit of Measure'))
+	product_outgoing_qty = fields.Float(string='Cantidad Saliente', related='product_template_id.outgoing_qty', digits=dp.get_precision('Product Unit of Measure'))
 	#Reglas de Reordenamiento
-	product_nbr_reordering_rules = fields.Integer(string= 'Reglas de Abastecimiento', related='product_id.nbr_reordering_rules', digits=dp.get_precision('Product Unit of Measure'))
+	product_nbr_reordering_rules = fields.Integer(string= 'Reglas de Abastecimiento', related='product_template_id.nbr_reordering_rules', digits=dp.get_precision('Product Unit of Measure'))
 	#Regla minima
-	product_reordering_min_qty = fields.Float(string= u'Reabastecimiento Mínimo', related='product_id.reordering_min_qty', digits=dp.get_precision('Product Unit of Measure'))
+	product_reordering_min_qty = fields.Float(string= u'Reabastecimiento Mínimo', related='product_template_id.reordering_min_qty', digits=dp.get_precision('Product Unit of Measure'))
 	#Regla maxima
-	product_reordering_max_qty = fields.Float(string= u'Reabastecimiento Máximo', related='product_id.reordering_max_qty', digits=dp.get_precision('Product Unit of Measure'))
+	product_reordering_max_qty = fields.Float(string= u'Reabastecimiento Máximo', related='product_template_id.reordering_max_qty', digits=dp.get_precision('Product Unit of Measure'))
 
 	def _compute_cost_product(self):
 		for x in self:
