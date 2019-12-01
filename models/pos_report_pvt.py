@@ -73,8 +73,34 @@ class PosReportPVT(models.TransientModel):
 	#Utilidad del producto
 	utility_product = fields.Float(string="Utilidad Total", compute="_compute_utility_product", default=0)
 	#cantidad a la mano
-	product_qty_stock = fields.Float(string='Cantidad a la mano', compute="_compute_qty_stock", digits=dp.get_precision('Product Unit of Measure'))
+	product_qty_stock = fields.Float(string='A la mano', compute="_compute_qty_stock", digits=dp.get_precision('Product Unit of Measure'))
+	#cantidad virtual
+	product_virtual_available = fields.Float(string='Cantidad Virtual', compute="_compute_qty_virtual", digits=dp.get_precision('Product Unit of Measure'))
+	#cantidad de entrada
+	product_incoming_qty = fields.Float(string='Cantidad Entrante', compute="_compute_incoming_qty", digits=dp.get_precision('Product Unit of Measure'))
+	#cantidad de entrada
+	product_outgoing_qty = fields.Float(string='Cantidad Saliente', compute="_compute_outgoing_qty", digits=dp.get_precision('Product Unit of Measure'))
 	
+
+	def _compute_outgoing_qty(self):
+		for x in self:
+			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])
+			x.product_qty_stock = product_id.outgoing_qty
+
+
+	def _compute_incoming_qty(self):
+		for x in self:
+			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])
+			x.product_qty_stock = product_id.incoming_qty
+
+
+
+	def _compute_qty_virtual(self):
+		for x in self:
+			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])
+			x.product_qty_stock = product_id.virtual_available
+
+
 	def _compute_qty_stock(self):
 		for x in self:
 			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])

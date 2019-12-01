@@ -229,6 +229,9 @@ AND product_categ.id = product_tmpl.categ_id
 		worksheet.set_column('J1:J1',35)
 		worksheet.set_column('K1:K1',35)
 		worksheet.set_column('L1:L1',35)
+		worksheet.set_column('M1:J1',35)
+		worksheet.set_column('N1:K1',35)
+	
 
 		preview = name_report 
 
@@ -245,7 +248,10 @@ AND product_categ.id = product_tmpl.categ_id
 				worksheet.write('G1', '# Promedio de Productos Vendidos diarios', header_format)
 				worksheet.write('H1', 'Costo Total', header_format)
 				worksheet.write('I1', 'Utilidad', header_format)
-				worksheet.write('J1', 'Cantidad a la Mano', header_format)
+				worksheet.write('J1', 'A la Mano', header_format)
+				worksheet.write('K1', 'Cantidad Virtual', header_format)
+				worksheet.write('L1', 'Cantidad Entrante', header_format)
+				worksheet.write('M1', 'Cantidad Saliente', header_format)
 
 				row=1
 				col=0
@@ -262,7 +268,9 @@ AND product_categ.id = product_tmpl.categ_id
 					worksheet.write(row,col+7 ,  value.cost_product, letter_number)
 					worksheet.write(row,col+8 ,  value.utility_product, letter_number)
 					worksheet.write(row,col+9 ,  value.product_qty_stock, letter_number)
-
+					worksheet.write(row,col+10 ,  value.product_virtual_available, letter_number)
+					worksheet.write(row,col+11,  value.product_incoming_qty, letter_number)
+					worksheet.write(row,col+12,  value.product_outgoing_qty, letter_number)
 					row+=1
 
 

@@ -19,7 +19,9 @@
 				<field name="utility_product" sum="Utility Product Total"/>
 				<field name="cost_product" sum="Total Cost Product"/>
 				<field name="product_qty_stock"/>
-				
+				<field name="product_virtual_available"/>
+				<field name="product_incoming_qty"/>
+				<field name="product_outgoing_qty"/>
 			</tree>
 
 		</field>
