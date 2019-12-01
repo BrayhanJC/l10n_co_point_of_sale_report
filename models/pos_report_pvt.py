@@ -85,20 +85,20 @@ class PosReportPVT(models.TransientModel):
 	def _compute_outgoing_qty(self):
 		for x in self:
 			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])
-			x.product_qty_stock = product_id.outgoing_qty
+			x.product_outgoing_qty = product_id.outgoing_qty
 
 
 	def _compute_incoming_qty(self):
 		for x in self:
 			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])
-			x.product_qty_stock = product_id.incoming_qty
+			x.product_incoming_qty = product_id.incoming_qty
 
 
 
 	def _compute_qty_virtual(self):
 		for x in self:
 			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])
-			x.product_qty_stock = product_id.virtual_available
+			x.product_virtual_available = product_id.virtual_available
 
 
 	def _compute_qty_stock(self):
