@@ -173,12 +173,7 @@ AND product_categ.id = product_tmpl.categ_id
 		sql+=""" GROUP BY r_user.id, product_tmpl.id, pvt.id, pvt.name, product_tmpl.categ_id;
 		"""
 
-	
-
 		self.env.cr.execute( sql )
-
-
-
 
 
 	@api.multi
@@ -205,8 +200,6 @@ AND product_categ.id = product_tmpl.categ_id
 
 
 		name_report = "Pos Report - " + str(fields.Datetime.from_string(fields.Datetime.now()))
-
-		data_company = self.return_information_company()
 
 		Header_Text = name_report
 		file_data = BytesIO()
@@ -295,6 +288,7 @@ AND product_categ.id = product_tmpl.categ_id
 	def button_return_report(self):
 
 		self.load_information_report_pvt()
+		
 		return {
 			'name': _('Reporte Punto de Venta'),
 			'res_model':'pos.report_pvt',
