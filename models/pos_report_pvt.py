@@ -75,7 +75,7 @@ class PosReportPVT(models.TransientModel):
 	#cantidad virtual
 	product_qty_stock = fields.Float(string='A la Mano', related='product_template_id.qty_available', digits=dp.get_precision('Product Unit of Measure'))
 	#cantidad virtual
-	product_virtual_available = fields.Float(string='Cantidad Virtual', related='product_template_id.qty_virtual', digits=dp.get_precision('Product Unit of Measure'))
+	product_virtual_available = fields.Float(string='Cantidad Virtual', related='product_template_id.virtual_available', digits=dp.get_precision('Product Unit of Measure'))
 	#cantidad de entrada
 	product_incoming_qty = fields.Float(string='Cantidad Entrante', related='product_template_id.incoming_qty', digits=dp.get_precision('Product Unit of Measure'))
 	#cantidad de entrada
