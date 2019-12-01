@@ -18,7 +18,7 @@
 				<field name="sold_product_daily_qty" avg="AVG Total Producto Qty"/>
 				<field name="utility_product" sum="Utility Product Total"/>
 				<field name="cost_product" sum="Total Cost Product"/>
-				<field name="product_qty_actual"/>
+				<field name="product_qty_stock"/>
 				
 			</tree>
 

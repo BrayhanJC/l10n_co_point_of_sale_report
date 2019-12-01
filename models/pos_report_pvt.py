@@ -73,8 +73,12 @@ class PosReportPVT(models.TransientModel):
 	#Utilidad del producto
 	utility_product = fields.Float(string="Utilidad Total", compute="_compute_utility_product", default=0)
 	#cantidad a la mano
-	product_qty_actual = fields.Float(string='Cantidad a la mano', digits=dp.get_precision('Product Unit of Measure'), related='product_template_id.qty_available', store=True)
+	product_qty_stock = fields.Float(string='Cantidad a la mano', compute="_compute_qty_stock", digits=dp.get_precision('Product Unit of Measure'))
 	
+	def _compute_qty_stock(self):
+		for x in self:
+			product_id = self.env['product.product'].search([('product_tmpl_id', '=', x.product_template_id.id)])
+			x.product_qty_stock = product_id.qty_available
 
 	def _compute_cost_product(self):
 		for x in self:

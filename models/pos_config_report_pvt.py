@@ -261,7 +261,7 @@ AND product_categ.id = product_tmpl.categ_id
 					worksheet.write(row,col+6 , (value.sold_product_daily_qty), letter_number)
 					worksheet.write(row,col+7 ,  value.cost_product, letter_number)
 					worksheet.write(row,col+8 ,  value.utility_product, letter_number)
-					worksheet.write(row,col+9 ,  str(0), letter_number)
+					worksheet.write(row,col+9 ,  value.product_qty_stock, letter_number)
 
 					row+=1
 
@@ -288,7 +288,7 @@ AND product_categ.id = product_tmpl.categ_id
 	def button_return_report(self):
 
 		self.load_information_report_pvt()
-		
+
 		return {
 			'name': _('Reporte Punto de Venta'),
 			'res_model':'pos.report_pvt',
