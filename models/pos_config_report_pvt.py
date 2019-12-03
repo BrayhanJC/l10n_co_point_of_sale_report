@@ -76,7 +76,7 @@ class PosConfigReportPDV(models.TransientModel):
 
 
 		today = fields.Datetime.from_string(fields.Datetime.now())
-		date_last_thirty = today + timedelta(days=-50)
+		date_last_thirty = today + timedelta(days=-30)
 
 		sql_delete = "DELETE FROM pos_report_pvt"
 		self.env.cr.execute(sql_delete)
@@ -184,14 +184,6 @@ AND product_categ.id = product_tmpl.categ_id
 		model_pos_report_pvt= self.env['pos.report_pvt']
 
 		record = model_pos_report_pvt.search([], order="pvt_store asc")
-
-		categ_ids = []
-		data_pvt = []
-		for x in record:
-			if x.product_category_id.id not in categ_ids:
-				categ_ids.append(x.product_category_id.id)
-			if x.pvt_store.id not in data_pvt:
-				data_pvt.append(x.pvt_store.id)
 
 		#sorted(vals, key=lambda x: getattr(x, x['product_category_id']), reverse=True)
 		#new_data = sorted(vals, key=lambda x: x['product_category_id'])
