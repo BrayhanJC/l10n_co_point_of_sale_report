@@ -38,28 +38,20 @@ class PosReportPVT(models.TransientModel):
 
 
 	
-	#'date_order':, 
-	#'product_category_id':, 
-	#'pvt_store':, 
-	#'product_template_id':, 
-	#'total_sales':, 
-	#'sale_average_day':, 
-	#'product_qty':, 
-	#'sold_product_daily_qty':, 
-	#'cost_product':, 
-	#'utility_product':, 
 
 
-	#Fecha de la orden
-	date_order = fields.Datetime(string="Fecha Inicio")
+	#product
+	product_template_id = fields.Many2one('product.template', string="Producto")
+	#costo producto
+	standard_price_product = fields.Float(string='Costo Unitario', related='product_template_id.standard_price', digits=dp.get_precision('Product Unit of Measure'))
+	#costo producto
+	barcode_product = fields.Char(string=u'Código de Barras', related='product_template_id.barcode', digits=dp.get_precision('Product Unit of Measure'))
 	#vendedor
 	user_id = fields.Many2one('res.users', string="Vendedor")
 	#categoria del producto
 	product_category_id = fields.Many2one('product.category', string=u"Categoría")
 	#punto de venta
 	pvt_store = fields.Many2one('pos.config', string="Tienda")
-	#product
-	product_template_id = fields.Many2one('product.template', string="Producto")
 	#ventas
 	total_sales = fields.Float(string="Total Ventas", default=0)
 	#venta promedio dia
@@ -86,6 +78,18 @@ class PosReportPVT(models.TransientModel):
 	product_reordering_min_qty = fields.Float(string= u'Reabastecimiento Mínimo', related='product_template_id.reordering_min_qty', digits=dp.get_precision('Product Unit of Measure'))
 	#Regla maxima
 	product_reordering_max_qty = fields.Float(string= u'Reabastecimiento Máximo', related='product_template_id.reordering_max_qty', digits=dp.get_precision('Product Unit of Measure'))
+
+
+	def _compute_barcode_product(self):
+
+		_logger.info('##########')
+		for x in self:
+			_logger.info(x.id)
+			_logger.info(x.name)
+			product =  self.env['product.product'].search([('product_tmpl_id', '=', x.id)])
+			print(product)
+			x.barcode_product = product.barcode  or ''
+
 
 	def _compute_cost_product(self):
 		for x in self:

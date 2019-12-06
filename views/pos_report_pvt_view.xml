@@ -7,9 +7,10 @@
 		<field name="arch" type="xml">
 
 			<tree>
+				
+				<field name="barcode_product"/>
 				<field name="pvt_store"/>
 				<field name="user_id"/>
-				<field name="date_order"/>
 				<field name="product_template_id"/>
 				<field name="product_category_id"/>
 				<field name="product_qty"/>
@@ -18,6 +19,7 @@
 				<field name="sold_product_daily_qty" avg="AVG Total Producto Qty"/>
 				<field name="utility_product" sum="Utility Product Total"/>
 				<field name="cost_product" sum="Total Cost Product"/>
+				<field name="standard_price_product" sum="Total Cost"/>
 				<field name="product_qty_stock" sum="Total Stock Product"/>
 				<field name="product_virtual_available" sum="Total Virtual Available"/>
 				<field name="product_incoming_qty" sum="Total Inconming"/>
