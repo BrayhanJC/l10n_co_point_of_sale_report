@@ -266,7 +266,7 @@ AND product_categ.id = product_tmpl.categ_id
 				col=0
 
 				for value in record:
-					worksheet.write(row,col , str(value.product_template_id.barcode) or '', letter_left)
+					worksheet.write(row,col , value.barcode_product or '', letter_left)
 					worksheet.write(row,col+1, str(value.pvt_store.name), letter_left)
 					worksheet.write(row,col+2 , str(value.product_template_id.name), letter_left)
 					worksheet.write(row,col+3 , str(value.user_id.name), letter_left)
