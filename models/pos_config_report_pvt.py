@@ -80,7 +80,7 @@ class PosConfigReportPDV(models.TransientModel):
 		pvt_ids = ""
 		if self.pvt_ids:
 			#verificando que sesiones tienen el punto de venta seleccionado
-			pos_session_ids = model_pos_sesion.search([('config_id', '=', [x.id for x in self.pvt_ids])])
+			pos_session_ids = model_pos_sesion.search([('config_id', 'in', [x.id for x in self.pvt_ids])])
 			for x in pos_session_ids:
 				pvt_ids+= str(x.id) + ','
 			pvt_ids = pvt_ids[:len(pvt_ids)-1]
@@ -192,6 +192,9 @@ AND product_categ.id = product_tmpl.categ_id
 
 
 		print(sql)
+
+		_logger.info('---------')
+		_logger.info(sql)
 
 		self.env.cr.execute( sql )
 
