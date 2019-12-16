@@ -43,12 +43,23 @@ class PosConfigReportPDV(models.TransientModel):
 	pvt_ids = fields.Many2many(comodel_name='pos.config', relation='rel_config_report_pos_config', column1='pos_config_id', column2='pos_report_id', string='Tienda')
 	date_begin = fields.Datetime(string="Fecha Inicio")
 	date_end = fields.Datetime(string="Fecha Fin", default=lambda self: fields.datetime.now())
-	user_ids = fields.Many2many(comodel_name='res.users', relation='rel_config_report_pvt_user', column1='user_id', column2='config_report_id', string='Users')
+	user_ids = fields.Many2many(comodel_name='res.users', relation='rel_config_report_pvt_user', column1='user_id', column2='config_report_id', string='Usuarios')
 	filename = fields.Char('Nombre Archivo')
 	document = fields.Binary(string = 'Descargar Excel')
 
+	def return_date_current(self, date):
 
+		date_format = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
+		date_actual = date_format + timedelta(hours=-5)
+
+		return date_actual
 	def load_information_report_pvt(self):
+
+
+
+		if self.date_begin:
+			_logger.info(self.date_begin)
+			self.return_date_current(self.date_begin)
 		"""
 			Funcion que nos permite ejecutar una consulta para eliminar y crear el reporte del punto de venta
 		"""
@@ -75,8 +86,9 @@ class PosConfigReportPDV(models.TransientModel):
 			pvt_ids = pvt_ids[:len(pvt_ids)-1]
 
 
-		today = fields.Datetime.from_string(fields.Datetime.now())
+		today = self.return_date_current(fields.Datetime.from_string(fields.Datetime.now())) 
 		date_last_thirty = today + timedelta(days=-30)
+		date_last_thirty = self.return_date_current(date_last_thirty)
 
 		sql_delete = "DELETE FROM pos_report_pvt"
 		self.env.cr.execute(sql_delete)
@@ -160,12 +172,13 @@ AND pvt.id = pos_se.config_id
 
 AND product_categ.id = product_tmpl.categ_id
 		"""%{
-			'date_today': today,
-			'date_last_thirty': date_last_thirty,
+			'date_today': str(today),
+			'date_last_thirty': str(date_last_thirty),
 		}
 		
 		if self.date_begin:
-			sql+= " AND pos_or.date_order >= '" + self.date_begin +  "' " + "\n"
+			date_begin = self.return_date_current(self.date_begin)
+			sql+= " AND pos_or.date_order >= '" + str(date_begin) +  "' " + "\n"
 
 		if self.pvt_ids:
 			#verificando que sesiones tienen el punto de venta seleccionado
@@ -197,8 +210,24 @@ AND product_categ.id = product_tmpl.categ_id
 
 		#vals = sorted(new_data, key=lambda x: x['pvt_store'])
 
+		now=fields.Datetime.context_timestamp(self, fields.Datetime.from_string(fields.Datetime.now()))
 
-		name_report = "Pos Report - " + str(fields.Datetime.from_string(fields.Datetime.now()))
+		date_today = datetime.strptime(str(str(now)[:19]), "%Y-%m-%d %H:%M:%S")
+		
+		today = date_today + timedelta(hours=-5)
+
+		_logger.info(today)
+
+
+		#date_today =datetime.now()
+
+		#date_current = date_today + timedelta(hours=-5)
+
+
+		#_logger.info(date_current)
+
+
+		name_report = "Pos Report - " + str(today)
 
 		Header_Text = name_report
 		file_data = BytesIO()
