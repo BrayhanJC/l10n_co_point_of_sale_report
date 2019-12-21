@@ -90,6 +90,9 @@ class PosConfigReportPDV(models.TransientModel):
 		date_last_thirty = today + timedelta(days=-30)
 		date_last_thirty = self.return_date_current(date_last_thirty)
 
+		if self.date_end:
+			today = self.date_end
+
 		sql_delete = "DELETE FROM pos_report_pvt"
 		self.env.cr.execute(sql_delete)
 
