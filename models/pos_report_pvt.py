@@ -78,7 +78,10 @@ class PosReportPVT(models.TransientModel):
 	product_reordering_min_qty = fields.Float(string= u'Reabastecimiento Mínimo', related='product_template_id.reordering_min_qty', digits=dp.get_precision('Product Unit of Measure'))
 	#Regla maxima
 	product_reordering_max_qty = fields.Float(string= u'Reabastecimiento Máximo', related='product_template_id.reordering_max_qty', digits=dp.get_precision('Product Unit of Measure'))
-
+	#descuentos realizados
+	discounts = fields.Float(string="Descuentos", default=0)
+	#ventas totales - descuentos
+	total = fields.Float(string="Total", default=0)
 
 	def _compute_barcode_product(self):
 

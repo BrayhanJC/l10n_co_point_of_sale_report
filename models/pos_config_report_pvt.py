@@ -50,9 +50,9 @@ class PosConfigReportPDV(models.TransientModel):
 	def return_date_current(self, date):
 
 		date_format = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
-		date_actual = date_format + timedelta(hours=-5)
+		#date_actual = date_format + timedelta(hours=-5)
 
-		return date_actual
+		return date_format
 	def load_information_report_pvt(self):
 
 
@@ -97,7 +97,7 @@ class PosConfigReportPDV(models.TransientModel):
 		self.env.cr.execute(sql_delete)
 
 		sql = """
-INSERT INTO pos_report_pvt (user_id, product_category_id, pvt_store, product_template_id, total_sales, sale_average_day, product_qty, sold_product_daily_qty)
+INSERT INTO pos_report_pvt (user_id, product_category_id, pvt_store, product_template_id, total_sales, sale_average_day, product_qty, sold_product_daily_qty, discounts, total)
 SELECT r_user.id, product_tmpl.categ_id, pvt.id, product_tmpl.id, SUM(order_line.qty * order_line.price_unit), 
 ((SELECT SUM(ts_order_line.qty * ts_order_line.price_unit)
 FROM pos_order ts_pos_or, pos_order_line ts_order_line, pos_session ts_pos_se, 
@@ -153,8 +153,9 @@ AND sp_pvt.id = pvt.id
 AND sp_pos_se.config_id = pvt.id
 
 AND sp_product_categ.id = sp_product_tmpl.categ_id
-AND sp_product_tmpl.categ_id = product_tmpl.categ_id)/30)::float
-
+AND sp_product_tmpl.categ_id = product_tmpl.categ_id)/30)::float,
+SUM((order_line.qty * order_line.price_unit) * (order_line.discount / 100)),
+(SUM(order_line.qty * order_line.price_unit) - SUM((order_line.qty * order_line.price_unit) * (order_line.discount / 100)))
 
 FROM pos_order pos_or, pos_order_line order_line, pos_session pos_se, 
 product_product product, product_template product_tmpl, res_users r_user, 

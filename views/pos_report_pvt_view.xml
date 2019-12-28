@@ -13,8 +13,10 @@
 				<field name="user_id"/>
 				<field name="product_template_id"/>
 				<field name="product_category_id"/>
-				<field name="product_qty"/>
+				<field name="product_qty" sum="Total Producto"/>
 				<field name="total_sales" sum="Total Sales"/>
+				<field name="discounts" sum="Total Descuentos"/>
+				<field name="total" sum="Total"/>
 				<field name="sale_average_day" avg="AVG. Total Sales"/>
 				<field name="sold_product_daily_qty" avg="AVG Total Producto Qty"/>
 				<field name="utility_product" sum="Utility Product Total"/>
